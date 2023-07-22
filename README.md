@@ -1,6 +1,8 @@
 MrChromebox firmware utils for NixOS
 ====================================
 
+Do not report issues to the upstream when running this to update
+your system.
 
 ## Usage
 
