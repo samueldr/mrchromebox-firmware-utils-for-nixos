@@ -9,34 +9,38 @@ let
 
   flashrom = pkgs.callPackage (
     { stdenv
-    , fetchurl
-    , autoPatchelfHook
-    , flashrom
-    , zlib
-    , udev
+    , lib
+    , fetchgit
+    , pkg-config
+    , meson
+    , ninja
+    , cmocka
+    , libftdi1
     , libusb1
+    , pciutils
     }:
-    stdenv.mkDerivation {
-      pname = "patched_flashrom";
-      version = "cros_libpci37_20230206";
-      src = fetchurl {
-        url = "https://www.mrchromebox.tech/files/util/flashrom_cros_libpci37_20230206.tar.gz";
-        hash = "sha256-IcOqat2JXFtC6ts5BI75XECTwK/TZaZmgSqufVksFJY=";
+
+    stdenv.mkDerivation rec {
+      pname = "flashrom-cros";
+      version = "R110-15278.B";
+
+      src = fetchgit {
+        url = "https://chromium.googlesource.com/chromiumos/third_party/flashrom";
+        rev = "bc6a1b933141acd74951f4992b7fcb9d8b060e12";
+        hash = "sha256-GsUuASmLkEXPU9d2eyBpoXTo33MvQQ6trGvTiIJeNv0=";
       };
+
       nativeBuildInputs = [
-        autoPatchelfHook
-        flashrom
-        zlib
-        udev
-        libusb1
+        pkg-config meson ninja
+      ] ++ checkInputs;
+
+      buildInputs = [
+        libftdi1 libusb1 pciutils
       ];
-      unpackPhase = ''
-        tar vxf "$src"
-      '';
-      installPhase = ''
-        mkdir -vp $out/bin
-        mv -v flashrom $out/bin/
-      '';
+
+      checkInputs = [
+        cmocka
+      ];
     }
   ) {};
 
